@@ -55,3 +55,22 @@ func getUserById(c *gin.Context){
 	}
 	c.JSON(http.StatusNotFound,gin.H{"error":"User not found"})
 }
+
+func updateUser(c *gin.Context){
+	id,_ := strconv.Atoi(c.Param("id"))
+	var updated User
+	if err := c.BindJSON(&updated);
+	err != nil {
+		c.JSON(http.StatusBadRequest,gin.H{"error":err.Error()})
+		return
+	}
+	for i,u := range users{
+		if u.ID == id {
+			users[i].Name=updated.Name
+			c.JSON(http.StatusOK,users[i])
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+}
+
