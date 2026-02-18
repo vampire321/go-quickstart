@@ -24,7 +24,7 @@ func CRUD(){
 	{
 		api.GET("/users",getUsers)
 		api.POST("/users",createUser)
-		api.GET("/users/",getUserByID)
+		api.GET("/users/",getUserById)
 		api.PUT("/users/:id",updateUser)
 		api.DELETE("/users/:id",deleteUser)
 	}
@@ -41,4 +41,17 @@ func createUser(c *gin.Context){
 		c.JSON(http.StatusBadRequest,gin.H{"error":err.Error()})
 		return
 	}
+	u.ID = len(users)+1
+	users = append(users,u)
+	c.JSON(http.StatusCreated,u)
+}
+func getUserById(c *gin.Context){
+	id,_ := strconv.Atoi(c.Param("id"))
+	for _,u := range users{
+		if u.ID == id {
+			c.JSON(http.StatusOK,u)
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound,gin.H{"error":"User not found"})
 }
