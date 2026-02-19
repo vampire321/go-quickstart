@@ -88,3 +88,58 @@ func deleteUser(c *gin.Context){
 
 }
 
+// --- Account Handlers --- 
+
+func getAccounts(c *gin.Context) { 
+	c.JSON(http.StatusOK, accounts) 
+	} 
+
+func createAccount(c *gin.Context) { 
+	var a Account 
+	if err := c.BindJSON(&a); err != nil { 
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()}) 
+		return 
+		} 
+		a.ID = len(accounts) + 1 
+		accounts = append(accounts, a) 
+		c.JSON(http.StatusCreated, a) 
+}
+func getAccountByID(c *gin.Context) { 
+	id, _ := strconv.Atoi(c.Param("id")) 
+	for _, a := range accounts { 
+		if a.ID == id { 
+			c.JSON(http.StatusOK, a) 
+			return 
+			} 
+			} 
+			c.JSON(http.StatusNotFound, gin.H{"error": "Account not found"}) 
+		}
+
+func updateAccount(c *gin.Context) { 
+	id, _ := strconv.Atoi(c.Param("id")) 
+	var updated Account 
+	if err := c.BindJSON(&updated); err != nil {
+		 c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()}) 
+		 return 
+		 } 
+		 for i, a := range accounts { 
+			if a.ID == id { 
+				accounts[i].Balance = updated.Balance 
+				c.JSON(http.StatusOK, accounts[i]) 
+				return 
+				} 
+				} 
+			c.JSON(http.StatusNotFound, gin.H{"error": "Account not found"}) 
+			}
+
+func deleteAccount(c *gin.Context) {
+    id, _ := strconv.Atoi(c.Param("id"))
+    for i, a := range accounts {
+        if a.ID == id {
+            accounts = append(accounts[:i], accounts[i+1:]...)
+            c.JSON(http.StatusOK, gin.H{"message": "Account deleted"})
+            return
+        }
+    }
+    c.JSON(http.StatusNotFound, gin.H{"error": "Account not found"})
+}
